@@ -1,19 +1,69 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Padmug Web</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Telegram Web App Script -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
   <style>
-    body { font-family: Arial, sans-serif; background: #e0f7f1; display: flex; justify-content: center; align-items: center; height: 100vh; flex-direction: column; }
-    img { width: 150px; height: 150px; margin-bottom: 20px; }
-    h1 { color: #008060; }
-    p { color: #333; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #e0f7f1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      text-align: center;
+    }
+
+    .card {
+      background: white;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      width: 90%;
+      max-width: 400px;
+    }
+
+    h1 {
+      color: #008060;
+    }
+
+    .username {
+      color: #555;
+      margin-top: 10px;
+    }
   </style>
 </head>
 <body>
-  <img src="https://i.ibb.co/3R0WcPd/padmug-mug.png" alt="Padmug Web Logo">
-  <h1>Welcome to Padmug Web</h1>
-  <p>Your Telegram Web App is ready to launch!</p>
+
+  <div class="card">
+    <h1 id="welcome">Welcome</h1>
+    <div class="username" id="userinfo"></div>
+  </div>
+
+  <script>
+    const tg = window.Telegram.WebApp;
+    tg.expand();
+
+    if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+      const user = tg.initDataUnsafe.user;
+
+      document.getElementById("welcome").innerText =
+        "Hello, " + user.first_name + "!";
+
+      document.getElementById("userinfo").innerText =
+        "@" + (user.username || "No username") +
+        " | ID: " + user.id;
+    } else {
+      document.getElementById("welcome").innerText =
+        "Opened outside Telegram";
+    }
+  </script>
+
 </body>
 </html>
