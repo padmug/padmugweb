@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Padmug Web</title>
+<title>Padmug Web v2</title>
 
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
@@ -12,7 +12,7 @@
 body{
 margin:0;
 font-family:Arial, sans-serif;
-background:#e6faf4;
+background:#e8faf5;
 }
 
 .container{
@@ -23,43 +23,42 @@ padding:20px;
 
 .header{
 text-align:center;
-margin-bottom:20px;
+margin-bottom:15px;
 }
 
 .header h1{
-color:#0a8f6a;
+color:#0aa67a;
 margin-bottom:5px;
 }
 
 .card{
 background:white;
-padding:20px;
-border-radius:15px;
+padding:18px;
+border-radius:14px;
 box-shadow:0 6px 18px rgba(0,0,0,0.08);
-margin-bottom:15px;
+margin-bottom:12px;
 }
 
 button{
 width:100%;
-padding:14px;
+padding:13px;
 border:none;
 border-radius:10px;
+font-size:15px;
 margin-top:10px;
-font-size:16px;
 background:#0aa67a;
 color:white;
 cursor:pointer;
 }
 
 button:hover{
-background:#088a66;
+background:#088e67;
 }
 
 .nav{
 display:grid;
 grid-template-columns:1fr 1fr;
-gap:10px;
-margin-top:10px;
+gap:8px;
 }
 
 .section{
@@ -70,15 +69,33 @@ display:none;
 display:block;
 }
 
+.points{
+font-size:26px;
+font-weight:bold;
+color:#0aa67a;
+}
+
+.progress{
+height:8px;
+background:#e2e2e2;
+border-radius:10px;
+overflow:hidden;
+margin-top:8px;
+}
+
+.bar{
+height:8px;
+background:#0aa67a;
+width:0%;
+}
+
 .info{
 font-size:14px;
 color:#555;
 }
 
-.points{
-font-size:22px;
-font-weight:bold;
-color:#0a8f6a;
+ul{
+padding-left:18px;
 }
 
 </style>
@@ -93,18 +110,27 @@ color:#0a8f6a;
 <div id="welcome"></div>
 </div>
 
+<div class="card">
+⭐ Points
+<div class="points" id="points">0</div>
+
+<div class="progress">
+<div class="bar" id="progressbar"></div>
+</div>
+
+</div>
+
 <div id="home" class="section active">
 
 <div class="card">
-<div class="info">Dashboard</div>
 
 <div class="nav">
 
-<button onclick="show('giveaway')">🎁 Giveaway</button>
+<button onclick="show('daily')">🎁 Daily Reward</button>
 
-<button onclick="show('rewards')">⭐ Rewards</button>
+<button onclick="show('giveaway')">🎟 Giveaway</button>
 
-<button onclick="show('activity')">📊 Activity</button>
+<button onclick="show('leaderboard')">🏆 Leaderboard</button>
 
 <button onclick="show('profile')">👤 Profile</button>
 
@@ -115,19 +141,36 @@ color:#0a8f6a;
 </div>
 
 
+<div id="daily" class="section">
+
+<div class="card">
+
+<h3>🎁 Daily Reward</h3>
+
+<p class="info">Claim your daily Padmug points.</p>
+
+<button onclick="claimDaily()">Claim +10 Points</button>
+
+<p id="dailyStatus"></p>
+
+<button onclick="show('home')">⬅ Back</button>
+
+</div>
+
+</div>
+
+
 <div id="giveaway" class="section">
 
 <div class="card">
 
-<h3>🎁 Join Giveaway</h3>
+<h3>🎟 Giveaway Entry</h3>
 
-<p class="info">
-Enter the Padmug giveaway pool.
-</p>
+<p class="info">Cost: 20 points</p>
 
-<button onclick="fakeJoin()">Join Giveaway</button>
+<button onclick="joinGiveaway()">Enter Giveaway</button>
 
-<p id="giveawayStatus" class="info"></p>
+<p id="giveawayStatus"></p>
 
 <button onclick="show('home')">⬅ Back</button>
 
@@ -136,34 +179,21 @@ Enter the Padmug giveaway pool.
 </div>
 
 
-<div id="rewards" class="section">
+<div id="leaderboard" class="section">
 
 <div class="card">
 
-<h3>⭐ Rewards</h3>
+<h3>🏆 Leaderboard</h3>
 
-<p>Your current points:</p>
+<ul>
 
-<div class="points" id="points">0</div>
+<li>@user1 — 340 pts</li>
+<li>@user2 — 275 pts</li>
+<li>@user3 — 210 pts</li>
 
-<button onclick="earnPoints()">Simulate Earn</button>
+</ul>
 
-<button onclick="show('home')">⬅ Back</button>
-
-</div>
-
-</div>
-
-
-<div id="activity" class="section">
-
-<div class="card">
-
-<h3>📊 Activity</h3>
-
-<p class="info">Recent activity will appear here.</p>
-
-<ul id="activityLog"></ul>
+<p class="info">Leaderboard will sync with bot later.</p>
 
 <button onclick="show('home')">⬅ Back</button>
 
@@ -186,6 +216,15 @@ Enter the Padmug giveaway pool.
 
 </div>
 
+
+<div class="card">
+
+<h3>📊 Activity</h3>
+
+<ul id="activityLog"></ul>
+
+</div>
+
 </div>
 
 <script>
@@ -198,7 +237,7 @@ const user = tg.initDataUnsafe.user;
 if(user){
 
 document.getElementById("welcome").innerText =
-"Hello, " + user.first_name;
+"Hello " + user.first_name;
 
 document.getElementById("profileInfo").innerHTML =
 "<b>Name:</b> "+user.first_name+
@@ -209,46 +248,104 @@ document.getElementById("profileInfo").innerHTML =
 
 function show(section){
 
-const sections=document.querySelectorAll(".section");
+document.querySelectorAll(".section")
+.forEach(s=>s.classList.remove("active"));
 
-sections.forEach(s=>{
-s.classList.remove("active");
-});
-
-document.getElementById(section).classList.add("active");
+document.getElementById(section)
+.classList.add("active");
 
 }
 
-function fakeJoin(){
+function getPoints(){
 
-document.getElementById("giveawayStatus").innerText =
-"You are entered! (demo only)";
+let p=localStorage.getItem("padmug_points");
 
-logActivity("Joined giveaway");
+if(!p) p=0;
+
+return parseInt(p);
 
 }
 
-function earnPoints(){
+function setPoints(val){
 
-let pts=localStorage.getItem("padmug_points");
+localStorage.setItem("padmug_points",val);
 
-if(!pts) pts=0;
+document.getElementById("points").innerText=val;
 
-pts=parseInt(pts)+5;
+updateProgress();
 
-localStorage.setItem("padmug_points",pts);
+}
 
-document.getElementById("points").innerText=pts;
+function updateProgress(){
 
-logActivity("Earned 5 points");
+let p=getPoints();
+
+let percent=(p/100)*100;
+
+if(percent>100) percent=100;
+
+document.getElementById("progressbar")
+.style.width=percent+"%";
+
+}
+
+function claimDaily(){
+
+let last=localStorage.getItem("padmug_daily");
+
+let today=new Date().toDateString();
+
+if(last===today){
+
+document.getElementById("dailyStatus")
+.innerText="Already claimed today.";
+
+return;
+
+}
+
+let points=getPoints()+10;
+
+setPoints(points);
+
+localStorage.setItem("padmug_daily",today);
+
+document.getElementById("dailyStatus")
+.innerText="+10 points added!";
+
+logActivity("Claimed daily reward");
+
+}
+
+function joinGiveaway(){
+
+let points=getPoints();
+
+if(points<20){
+
+document.getElementById("giveawayStatus")
+.innerText="Not enough points.";
+
+return;
+
+}
+
+points-=20;
+
+setPoints(points);
+
+document.getElementById("giveawayStatus")
+.innerText="Entry confirmed! (demo)";
+
+logActivity("Entered giveaway");
 
 }
 
 function logActivity(text){
 
-const list=document.getElementById("activityLog");
+let list=document.getElementById("activityLog");
 
-const item=document.createElement("li");
+let item=document.createElement("li");
 
 item.innerText=text;
 
@@ -256,13 +353,7 @@ list.appendChild(item);
 
 }
 
-let savedPoints=localStorage.getItem("padmug_points");
-
-if(savedPoints){
-
-document.getElementById("points").innerText=savedPoints;
-
-}
+setPoints(getPoints());
 
 </script>
 
