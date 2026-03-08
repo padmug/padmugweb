@@ -1,69 +1,270 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
-  <title>Padmug Web</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Padmug Web</title>
 
-  <!-- Telegram Web App Script -->
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
 
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #e0f7f1;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      text-align: center;
-    }
+<style>
 
-    .card {
-      background: white;
-      padding: 30px;
-      border-radius: 20px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-      width: 90%;
-      max-width: 400px;
-    }
+body{
+margin:0;
+font-family:Arial, sans-serif;
+background:#e6faf4;
+}
 
-    h1 {
-      color: #008060;
-    }
+.container{
+max-width:420px;
+margin:auto;
+padding:20px;
+}
 
-    .username {
-      color: #555;
-      margin-top: 10px;
-    }
-  </style>
+.header{
+text-align:center;
+margin-bottom:20px;
+}
+
+.header h1{
+color:#0a8f6a;
+margin-bottom:5px;
+}
+
+.card{
+background:white;
+padding:20px;
+border-radius:15px;
+box-shadow:0 6px 18px rgba(0,0,0,0.08);
+margin-bottom:15px;
+}
+
+button{
+width:100%;
+padding:14px;
+border:none;
+border-radius:10px;
+margin-top:10px;
+font-size:16px;
+background:#0aa67a;
+color:white;
+cursor:pointer;
+}
+
+button:hover{
+background:#088a66;
+}
+
+.nav{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:10px;
+margin-top:10px;
+}
+
+.section{
+display:none;
+}
+
+.active{
+display:block;
+}
+
+.info{
+font-size:14px;
+color:#555;
+}
+
+.points{
+font-size:22px;
+font-weight:bold;
+color:#0a8f6a;
+}
+
+</style>
 </head>
+
 <body>
 
-  <div class="card">
-    <h1 id="welcome">Welcome</h1>
-    <div class="username" id="userinfo"></div>
-  </div>
+<div class="container">
 
-  <script>
-    const tg = window.Telegram.WebApp;
-    tg.expand();
+<div class="header">
+<h1>Padmug Web</h1>
+<div id="welcome"></div>
+</div>
 
-    if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
-      const user = tg.initDataUnsafe.user;
+<div id="home" class="section active">
 
-      document.getElementById("welcome").innerText =
-        "Hello, " + user.first_name + "!";
+<div class="card">
+<div class="info">Dashboard</div>
 
-      document.getElementById("userinfo").innerText =
-        "@" + (user.username || "No username") +
-        " | ID: " + user.id;
-    } else {
-      document.getElementById("welcome").innerText =
-        "Opened outside Telegram";
-    }
-  </script>
+<div class="nav">
+
+<button onclick="show('giveaway')">🎁 Giveaway</button>
+
+<button onclick="show('rewards')">⭐ Rewards</button>
+
+<button onclick="show('activity')">📊 Activity</button>
+
+<button onclick="show('profile')">👤 Profile</button>
+
+</div>
+
+</div>
+
+</div>
+
+
+<div id="giveaway" class="section">
+
+<div class="card">
+
+<h3>🎁 Join Giveaway</h3>
+
+<p class="info">
+Enter the Padmug giveaway pool.
+</p>
+
+<button onclick="fakeJoin()">Join Giveaway</button>
+
+<p id="giveawayStatus" class="info"></p>
+
+<button onclick="show('home')">⬅ Back</button>
+
+</div>
+
+</div>
+
+
+<div id="rewards" class="section">
+
+<div class="card">
+
+<h3>⭐ Rewards</h3>
+
+<p>Your current points:</p>
+
+<div class="points" id="points">0</div>
+
+<button onclick="earnPoints()">Simulate Earn</button>
+
+<button onclick="show('home')">⬅ Back</button>
+
+</div>
+
+</div>
+
+
+<div id="activity" class="section">
+
+<div class="card">
+
+<h3>📊 Activity</h3>
+
+<p class="info">Recent activity will appear here.</p>
+
+<ul id="activityLog"></ul>
+
+<button onclick="show('home')">⬅ Back</button>
+
+</div>
+
+</div>
+
+
+<div id="profile" class="section">
+
+<div class="card">
+
+<h3>👤 Profile</h3>
+
+<p id="profileInfo"></p>
+
+<button onclick="show('home')">⬅ Back</button>
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+const tg = window.Telegram.WebApp;
+tg.expand();
+
+const user = tg.initDataUnsafe.user;
+
+if(user){
+
+document.getElementById("welcome").innerText =
+"Hello, " + user.first_name;
+
+document.getElementById("profileInfo").innerHTML =
+"<b>Name:</b> "+user.first_name+
+"<br><b>Username:</b> @"+(user.username || "none")+
+"<br><b>ID:</b> "+user.id;
+
+}
+
+function show(section){
+
+const sections=document.querySelectorAll(".section");
+
+sections.forEach(s=>{
+s.classList.remove("active");
+});
+
+document.getElementById(section).classList.add("active");
+
+}
+
+function fakeJoin(){
+
+document.getElementById("giveawayStatus").innerText =
+"You are entered! (demo only)";
+
+logActivity("Joined giveaway");
+
+}
+
+function earnPoints(){
+
+let pts=localStorage.getItem("padmug_points");
+
+if(!pts) pts=0;
+
+pts=parseInt(pts)+5;
+
+localStorage.setItem("padmug_points",pts);
+
+document.getElementById("points").innerText=pts;
+
+logActivity("Earned 5 points");
+
+}
+
+function logActivity(text){
+
+const list=document.getElementById("activityLog");
+
+const item=document.createElement("li");
+
+item.innerText=text;
+
+list.appendChild(item);
+
+}
+
+let savedPoints=localStorage.getItem("padmug_points");
+
+if(savedPoints){
+
+document.getElementById("points").innerText=savedPoints;
+
+}
+
+</script>
 
 </body>
 </html>
