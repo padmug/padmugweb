@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Padmug Web v2</title>
+
+<title>Padmug Web</title>
 
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
@@ -11,14 +13,15 @@
 
 body{
 margin:0;
-font-family:Arial, sans-serif;
-background:#e8faf5;
+font-family:system-ui;
+background:linear-gradient(180deg,#dffaf2,#ffffff);
 }
 
 .container{
 max-width:420px;
 margin:auto;
 padding:20px;
+padding-bottom:90px;
 }
 
 .header{
@@ -28,37 +31,61 @@ margin-bottom:15px;
 
 .header h1{
 color:#0aa67a;
-margin-bottom:5px;
+margin:0;
 }
 
 .card{
+
 background:white;
+border-radius:16px;
 padding:18px;
-border-radius:14px;
-box-shadow:0 6px 18px rgba(0,0,0,0.08);
-margin-bottom:12px;
+margin-bottom:14px;
+
+box-shadow:0 10px 25px rgba(0,0,0,0.08);
+
+}
+
+.points{
+
+font-size:28px;
+font-weight:bold;
+color:#0aa67a;
+
+}
+
+.progress{
+
+height:8px;
+background:#e4e4e4;
+border-radius:10px;
+margin-top:10px;
+overflow:hidden;
+
+}
+
+.bar{
+
+height:8px;
+background:#0aa67a;
+width:0%;
+
 }
 
 button{
+
 width:100%;
-padding:13px;
 border:none;
-border-radius:10px;
-font-size:15px;
+padding:14px;
 margin-top:10px;
+border-radius:10px;
 background:#0aa67a;
 color:white;
-cursor:pointer;
+font-size:15px;
+
 }
 
-button:hover{
-background:#088e67;
-}
-
-.nav{
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:8px;
+button:active{
+transform:scale(.98);
 }
 
 .section{
@@ -69,33 +96,43 @@ display:none;
 display:block;
 }
 
-.points{
-font-size:26px;
-font-weight:bold;
-color:#0aa67a;
+.navbar{
+
+position:fixed;
+bottom:0;
+left:0;
+right:0;
+
+background:white;
+border-top:1px solid #eee;
+
+display:flex;
+justify-content:space-around;
+
+padding:10px 0;
+
 }
 
-.progress{
-height:8px;
-background:#e2e2e2;
-border-radius:10px;
-overflow:hidden;
-margin-top:8px;
+.navbtn{
+
+text-align:center;
+font-size:12px;
+color:#666;
+
 }
 
-.bar{
-height:8px;
-background:#0aa67a;
-width:0%;
+.navbtn span{
+
+display:block;
+font-size:22px;
+
 }
 
-.info{
+.activity{
+
 font-size:14px;
 color:#555;
-}
 
-ul{
-padding-left:18px;
 }
 
 </style>
@@ -106,35 +143,40 @@ padding-left:18px;
 <div class="container">
 
 <div class="header">
+
 <h1>Padmug Web</h1>
+
 <div id="welcome"></div>
+
 </div>
 
+
 <div class="card">
+
 ⭐ Points
+
 <div class="points" id="points">0</div>
 
 <div class="progress">
+
 <div class="bar" id="progressbar"></div>
+
 </div>
 
 </div>
+
 
 <div id="home" class="section active">
 
 <div class="card">
 
-<div class="nav">
+<b>Welcome</b>
 
-<button onclick="show('daily')">🎁 Daily Reward</button>
+<p class="activity">
 
-<button onclick="show('giveaway')">🎟 Giveaway</button>
+Use the menu below to explore Padmug Web.
 
-<button onclick="show('leaderboard')">🏆 Leaderboard</button>
-
-<button onclick="show('profile')">👤 Profile</button>
-
-</div>
+</p>
 
 </div>
 
@@ -147,13 +189,13 @@ padding-left:18px;
 
 <h3>🎁 Daily Reward</h3>
 
-<p class="info">Claim your daily Padmug points.</p>
+<button onclick="claimDaily()">
 
-<button onclick="claimDaily()">Claim +10 Points</button>
+Claim +10 Points
+
+</button>
 
 <p id="dailyStatus"></p>
-
-<button onclick="show('home')">⬅ Back</button>
 
 </div>
 
@@ -166,36 +208,15 @@ padding-left:18px;
 
 <h3>🎟 Giveaway Entry</h3>
 
-<p class="info">Cost: 20 points</p>
+<p>Cost: 20 points</p>
 
-<button onclick="joinGiveaway()">Enter Giveaway</button>
+<button onclick="joinGiveaway()">
+
+Enter Giveaway
+
+</button>
 
 <p id="giveawayStatus"></p>
-
-<button onclick="show('home')">⬅ Back</button>
-
-</div>
-
-</div>
-
-
-<div id="leaderboard" class="section">
-
-<div class="card">
-
-<h3>🏆 Leaderboard</h3>
-
-<ul>
-
-<li>@user1 — 340 pts</li>
-<li>@user2 — 275 pts</li>
-<li>@user3 — 210 pts</li>
-
-</ul>
-
-<p class="info">Leaderboard will sync with bot later.</p>
-
-<button onclick="show('home')">⬅ Back</button>
 
 </div>
 
@@ -209,8 +230,6 @@ padding-left:18px;
 <h3>👤 Profile</h3>
 
 <p id="profileInfo"></p>
-
-<button onclick="show('home')">⬅ Back</button>
 
 </div>
 
@@ -227,21 +246,63 @@ padding-left:18px;
 
 </div>
 
+
+<div class="navbar">
+
+<div class="navbtn" onclick="show('home')">
+
+<span>🏠</span>
+
+Home
+
+</div>
+
+<div class="navbtn" onclick="show('daily')">
+
+<span>🎁</span>
+
+Daily
+
+</div>
+
+<div class="navbtn" onclick="show('giveaway')">
+
+<span>🎟</span>
+
+Giveaway
+
+</div>
+
+<div class="navbtn" onclick="show('profile')">
+
+<span>👤</span>
+
+Profile
+
+</div>
+
+</div>
+
+
 <script>
 
 const tg = window.Telegram.WebApp;
+
 tg.expand();
 
 const user = tg.initDataUnsafe.user;
 
 if(user){
 
-document.getElementById("welcome").innerText =
-"Hello " + user.first_name;
+document.getElementById("welcome").innerText=
+"Hello "+user.first_name;
 
-document.getElementById("profileInfo").innerHTML =
+document.getElementById("profileInfo").innerHTML=
+
 "<b>Name:</b> "+user.first_name+
+
 "<br><b>Username:</b> @"+(user.username || "none")+
+
 "<br><b>ID:</b> "+user.id;
 
 }
@@ -249,9 +310,11 @@ document.getElementById("profileInfo").innerHTML =
 function show(section){
 
 document.querySelectorAll(".section")
+
 .forEach(s=>s.classList.remove("active"));
 
 document.getElementById(section)
+
 .classList.add("active");
 
 }
@@ -285,6 +348,7 @@ let percent=(p/100)*100;
 if(percent>100) percent=100;
 
 document.getElementById("progressbar")
+
 .style.width=percent+"%";
 
 }
@@ -298,6 +362,7 @@ let today=new Date().toDateString();
 if(last===today){
 
 document.getElementById("dailyStatus")
+
 .innerText="Already claimed today.";
 
 return;
@@ -311,6 +376,7 @@ setPoints(points);
 localStorage.setItem("padmug_daily",today);
 
 document.getElementById("dailyStatus")
+
 .innerText="+10 points added!";
 
 logActivity("Claimed daily reward");
@@ -324,6 +390,7 @@ let points=getPoints();
 if(points<20){
 
 document.getElementById("giveawayStatus")
+
 .innerText="Not enough points.";
 
 return;
@@ -335,7 +402,8 @@ points-=20;
 setPoints(points);
 
 document.getElementById("giveawayStatus")
-.innerText="Entry confirmed! (demo)";
+
+.innerText="Entry confirmed!";
 
 logActivity("Entered giveaway");
 
